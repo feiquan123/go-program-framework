@@ -16,10 +16,10 @@ var (
 func init() {
 	tips()
 	initViper()
+	printConfig()
 	initLogger()
 
 	exit()
-	//printConfig()
 }
 
 func main() {

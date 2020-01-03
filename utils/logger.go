@@ -8,11 +8,50 @@ import (
 	"strings"
 )
 
-func NewLogger(logfile, level string, isJson, console, displayline bool) (log *logrus.Logger) {
+type LoggerConfig struct {
+	Level       string
+	DisplayLine bool
+	IsJson      bool
+	Console     bool
+	File        string
+}
+
+func NewLoggerConfigFromMap(l map[string]string) *LoggerConfig {
+	log := new(LoggerConfig)
+	var ok bool
+	if log.Level, ok = l["level"]; !ok {
+		panic("can not get [level] form map")
+	}
+
+	if log.File, ok = l["file"]; !ok {
+		panic("can not get [file] form map")
+	}
+
+	if t, ok := l["displayline"]; !ok {
+		panic("can not get [displayline] form map")
+	} else {
+		log.DisplayLine = isTrueStr(t)
+	}
+
+	if t, ok := l["isjson"]; !ok {
+		panic("can not get [isjson] form map")
+	} else {
+		log.IsJson = isTrueStr(t)
+	}
+
+	if t, ok := l["console"]; !ok {
+		panic("can not get [console] form map")
+	} else {
+		log.Console = isTrueStr(t)
+	}
+	return log
+}
+
+func NewLogger(l *LoggerConfig) (log *logrus.Logger) {
 	log = logrus.New()
 
 	// set level
-	switch strings.ToUpper(level) {
+	switch strings.ToUpper(l.Level) {
 	case "TRACE":
 		log.SetLevel(logrus.TraceLevel)
 	case "DEBUG":
@@ -30,7 +69,7 @@ func NewLogger(logfile, level string, isJson, console, displayline bool) (log *l
 	}
 
 	// set display line
-	if displayline {
+	if l.DisplayLine {
 		// abs path not use
 		//log.SetReportCaller(v.GetBool("log.displayLine"))
 
@@ -41,7 +80,7 @@ func NewLogger(logfile, level string, isJson, console, displayline bool) (log *l
 	}
 
 	// log msg format
-	if isJson {
+	if l.IsJson {
 		log.SetFormatter(&logrus.JSONFormatter{
 			TimestampFormat: "2006-01-02 15:04:05.000",
 		})
@@ -52,28 +91,45 @@ func NewLogger(logfile, level string, isJson, console, displayline bool) (log *l
 	}
 
 	// output
-	if console {
+	if l.Console {
 		log.SetOutput(os.Stdout)
 	} else {
 		var err error
-		logfile, err = filepath.Abs(logfile)
+		l.File, err = filepath.Abs(l.File)
 		if err != nil {
 			log.Fatalln(err)
 		}
 		// create log fold
-		if err = os.MkdirAll(filepath.Dir(logfile), os.ModePerm); err != nil {
-			log.Fatalln("can not create log fold,", filepath.Dir(logfile))
+		if err = os.MkdirAll(filepath.Dir(l.File), os.ModePerm); err != nil {
+			log.Fatalln("can not create log fold,", filepath.Dir(l.File))
 		}
 		// out put to file
-		file, err := os.OpenFile(logfile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModeAppend)
+		file, err := os.OpenFile(l.File, os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModeAppend)
 		if err != nil {
 			log.Fatalln("failed to open log file,", err)
 		}
 		// modify log file authority
-		if err := os.Chmod(logfile, 0666); err != nil {
+		if err := os.Chmod(l.File, 0666); err != nil {
 			log.Fatalln("can not modify log file authority to 0666,", err)
 		}
 		log.Out = file
 	}
 	return log
+}
+
+// get log config map from viper
+func NewLoggerFromMap(l map[string]string) (log *logrus.Logger) {
+	return NewLogger(NewLoggerConfigFromMap(l))
+}
+
+// "true" -> true
+func isTrueStr(b string) bool {
+	switch strings.ToLower(b) {
+	case "true":
+		return true
+	case "false":
+		return false
+	default:
+		return false
+	}
 }
