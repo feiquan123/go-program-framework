@@ -36,7 +36,7 @@ func NewLoggerConfigFromMap(l map[string]string) *LoggerConfig {
 		log.DisplayLine = isTrueStr(t)
 	}
 
-	if t, ok := l["IsJSON"]; !ok {
+	if t, ok := l["isjson"]; !ok {
 		panic("can not get [IsJSON] form map")
 	} else {
 		log.IsJSON = isTrueStr(t)
