@@ -33,8 +33,9 @@ func readFromConfig(v *viper.Viper) {
 }
 
 func printConfig() {
-	log.Println(
+	log.Print(
 		"\n",
 		logConfig, "\n",
+		"\n",
 	)
 }

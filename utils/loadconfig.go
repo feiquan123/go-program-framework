@@ -2,13 +2,14 @@ package utils
 
 import (
 	"fmt"
-	"github.com/spf13/viper"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/spf13/viper"
 )
 
-// load config
+// LoadConfig : load config
 func LoadConfig(file string) (v *viper.Viper, err error) {
 	file, err = filepath.Abs(file)
 	if err != nil {

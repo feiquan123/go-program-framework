@@ -1,21 +1,24 @@
 package utils
 
 import (
-	"github.com/onrik/logrus/filename"
-	"github.com/sirupsen/logrus"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/onrik/logrus/filename"
+	"github.com/sirupsen/logrus"
 )
 
+// LoggerConfig : logger config from yaml or json file
 type LoggerConfig struct {
 	Level       string
 	DisplayLine bool
-	IsJson      bool
+	IsJSON      bool
 	Console     bool
 	File        string
 }
 
+// NewLoggerConfigFromMap : new logger config from map
 func NewLoggerConfigFromMap(l map[string]string) *LoggerConfig {
 	log := new(LoggerConfig)
 	var ok bool
@@ -33,10 +36,10 @@ func NewLoggerConfigFromMap(l map[string]string) *LoggerConfig {
 		log.DisplayLine = isTrueStr(t)
 	}
 
-	if t, ok := l["isjson"]; !ok {
-		panic("can not get [isjson] form map")
+	if t, ok := l["IsJSON"]; !ok {
+		panic("can not get [IsJSON] form map")
 	} else {
-		log.IsJson = isTrueStr(t)
+		log.IsJSON = isTrueStr(t)
 	}
 
 	if t, ok := l["console"]; !ok {
@@ -47,6 +50,7 @@ func NewLoggerConfigFromMap(l map[string]string) *LoggerConfig {
 	return log
 }
 
+// NewLogger : create a Loggre
 func NewLogger(l *LoggerConfig) (log *logrus.Logger) {
 	log = logrus.New()
 
@@ -80,7 +84,7 @@ func NewLogger(l *LoggerConfig) (log *logrus.Logger) {
 	}
 
 	// log msg format
-	if l.IsJson {
+	if l.IsJSON {
 		log.SetFormatter(&logrus.JSONFormatter{
 			TimestampFormat: "2006-01-02 15:04:05.000",
 		})
@@ -117,12 +121,12 @@ func NewLogger(l *LoggerConfig) (log *logrus.Logger) {
 	return log
 }
 
-// get log config map from viper
+// NewLoggerFromMap : get log config map from viper
 func NewLoggerFromMap(l map[string]string) (log *logrus.Logger) {
 	return NewLogger(NewLoggerConfigFromMap(l))
 }
 
-// "true" -> true
+// isTrueStr : "true" -> true
 func isTrueStr(b string) bool {
 	switch strings.ToLower(b) {
 	case "true":

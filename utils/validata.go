@@ -4,7 +4,7 @@ import (
 	"errors"
 )
 
-// validate args, exclude bool type
+// Validate : validate args, exclude bool type
 func Validate(args ...interface{}) error {
 	for _, arg := range args {
 		// type judge
