@@ -7,8 +7,8 @@ import (
 )
 
 var (
-	app_name    = "your appname"
-	app_version = "v1.0.0"
+	appName    = "your appname"
+	appVersion = "v1.0.0"
 	v           *viper.Viper
 	logger      *logrus.Logger
 )

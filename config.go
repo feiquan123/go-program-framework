@@ -1,14 +1,15 @@
 package main
 
 import (
+	"log"
+
 	"github.com/spf13/viper"
 	"localhost.com/go-program-framework/utils"
-	"log"
 )
 
 // config
 var (
-	log_config map[string]string
+	logConfig map[string]string
 )
 
 // set viper
@@ -22,10 +23,10 @@ func initViper() {
 }
 
 func readFromConfig(v *viper.Viper) {
-	log_config = v.GetStringMapString("log")
+	logConfig = v.GetStringMapString("log")
 
 	if err := utils.Validate(
-		log_config,
+		logConfig,
 	); err != nil {
 		log.Fatalln(err)
 	}
@@ -34,6 +35,6 @@ func readFromConfig(v *viper.Viper) {
 func printConfig() {
 	log.Println(
 		"\n",
-		log_config, "\n",
+		logConfig, "\n",
 	)
 }

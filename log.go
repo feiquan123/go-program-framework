@@ -6,5 +6,5 @@ import (
 
 // set log
 func initLogger() {
-	logger = utils.NewLoggerFromMap(log_config)
+	logger = utils.NewLoggerFromMap(logConfig)
 }
