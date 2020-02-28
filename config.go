@@ -39,7 +39,7 @@ func setConfig() {
 	kernel.SetConfig(langurage)
 }
 
-// set viper
+// initViper : set viper
 func initViper() {
 	var err error
 	v, err = utils.LoadConfig(*c)
