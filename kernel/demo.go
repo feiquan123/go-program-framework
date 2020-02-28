@@ -1,6 +1,6 @@
 package kernel
 
 // Run : test
-func Run() {
-	logger.Info("deverlop language:" + language)
+func Run(lang string) {
+	logger.Info("deverlop language:" + lang)
 }

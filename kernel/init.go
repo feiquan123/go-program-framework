@@ -12,8 +12,3 @@ var (
 func SetLog(log *logrus.Logger) {
 	logger = log
 }
-
-// SetConfig : set config
-func SetConfig(lang string) {
-	language = lang
-}

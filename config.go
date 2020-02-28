@@ -4,7 +4,6 @@ import (
 	"log"
 
 	"github.com/spf13/viper"
-	"localhost.com/go-program-framework/kernel"
 	"localhost.com/go-program-framework/utils"
 )
 
@@ -34,11 +33,6 @@ func printConfig() {
 	)
 }
 
-// setConfig : set orther model config
-func setConfig() {
-	kernel.SetConfig(langurage)
-}
-
 // initViper : set viper
 func initViper() {
 	var err error
@@ -47,5 +41,4 @@ func initViper() {
 		log.Fatalln(err)
 	}
 	readFromConfig(v)
-	setConfig()
 }
