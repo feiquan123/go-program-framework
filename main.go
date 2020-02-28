@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
@@ -9,8 +8,8 @@ import (
 var (
 	appName    = "your appname"
 	appVersion = "v1.0.0"
-	v           *viper.Viper
-	logger      *logrus.Logger
+	v          *viper.Viper
+	logger     *logrus.Logger
 )
 
 func init() {
@@ -23,6 +22,6 @@ func init() {
 }
 
 func main() {
-	fmt.Println(v.GetString("log.path"))
-	logger.Debug("info")
+	logger.Debug("hello world")
+	call()
 }

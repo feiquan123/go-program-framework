@@ -5,3 +5,5 @@ log:
   isJson: false
   console: true
   file: /var/log/go-program-famework.log
+
+language: golang
