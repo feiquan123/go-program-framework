@@ -9,23 +9,23 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// Msg : parse kafka msg
-type Msg interface {
+// KafkaMsg : parse kafka msg
+type KafkaMsg interface {
 	ParseKafkaMsg(message *sarama.ConsumerMessage) error
 }
 
 /*
-Consumer : return consumer msg chan
+KafkaConsumer : return consumer msg chan
 args:
-	brokers						| kafka addresses
-	consumerGroup   			| kafka consumer group
-	topic						| kafka topic
-	newMsg(topic string) Msg 	| get diffrent Msg object by diffrent kafka topic
-	logger						| log hardle
-	success						| msg parse success num to print or log
-	fail						| msg parse fail num to print or log
+	brokers								| kafka addresses
+	consumerGroup   					| kafka consumer group
+	topic								| kafka topic
+	newKafkaMsg(topic string) KafkaMsg 	| get diffrent Msg object by diffrent kafka topic
+	logger								| log hardle
+	success								| msg parse success num to print or log
+	fail								| msg parse fail num to print or log
 */
-func Consumer(brokers []string, consumerGroup string, topics []string, newMsg func(topic string) Msg, logger *logrus.Logger, success, fail int) {
+func KafkaConsumer(brokers []string, consumerGroup string, topics []string, newKafkaMsg func(topic string) KafkaMsg, logger *logrus.Logger, success, fail int) {
 	logger.Debug("Assoc Consumer:", brokers, consumerGroup, topics, success, fail)
 
 	// cluster config
@@ -62,16 +62,19 @@ loop:
 		case msg, ok := <-consumer.Messages():
 			if ok {
 				consumer.MarkOffset(msg, "")
-				kafkaMsg := newMsg(topic)
+				kafkaMsg := newKafkaMsg(topic)
+				if kafkaMsg == nil {
+					continue
+				}
 				if err := kafkaMsg.ParseKafkaMsg(msg); err != nil && err.Error() != "" {
 					failCount++
 					if failCount%fail == 0 {
-						logger.Errorf("%s receive error msg： %s Error:%v", topic, string(msg.Value), err)
+						logger.Errorf("[Kafka] %s receive error msg： %s Error:%v", topic, string(msg.Value), err)
 					}
 				} else {
 					successCount++
 					if successCount%success == 0 {
-						logger.Debugf("%s receive msg: %s", topic, string(msg.Value))
+						logger.Debugf("[Kafka] %s receive msg: %s", topic, string(msg.Value))
 					}
 				}
 			}
@@ -83,7 +86,7 @@ loop:
 }
 
 /*
-MultAssocComsumer : run more assco to consumer one topic
+KafkaMultAssocComsumer : run more assco to consumer one topic
 args:
 	assocCount					| assoc num
 	brokers						| kafka addresses
@@ -94,11 +97,11 @@ args:
 	success						| msg parse success num to print or log
 	fail						| msg parse fail num to print or log
 */
-func MultAssocComsumer(assocCount int, brokers []string, consumerGroup string, topic string, newMsg func(topic string) Msg, logger *logrus.Logger, success, fail int) {
+func KafkaMultAssocComsumer(assocCount int, brokers []string, consumerGroup string, topic string, newMsg func(topic string) KafkaMsg, logger *logrus.Logger, success, fail int) {
 	for i := 0; i < assocCount; i++ {
-		logger.Debug("start kafka.Consumer ", i)
+		logger.Debugf("start [Kafka] consumer:%s of topic:%s %d", consumerGroup, topic, i)
 		go func() {
-			Consumer(brokers, consumerGroup, []string{topic}, newMsg, logger, success, fail)
+			KafkaConsumer(brokers, consumerGroup, []string{topic}, newMsg, logger, success, fail)
 		}()
 	}
 }

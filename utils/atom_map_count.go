@@ -5,14 +5,14 @@ import "sync"
 // MapCounter : map[string]Counter
 type MapCounter struct {
 	Lock     *sync.RWMutex
-	Counters map[string]*Counter
+	Counters map[string]int64
 }
 
 // NewMapCounter : create a map counter
 func NewMapCounter() *MapCounter {
 	return &MapCounter{
 		Lock:     new(sync.RWMutex),
-		Counters: make(map[string]*Counter, 0),
+		Counters: make(map[string]int64, 0),
 	}
 }
 
@@ -21,15 +21,22 @@ func (m *MapCounter) Add(key string, n int64) {
 	m.Lock.Lock()
 	defer m.Lock.Unlock()
 
-	if mapCounter, ok := m.Counters[key]; ok {
+	if _, ok := m.Counters[key]; ok {
 		// update
-		mapCounter.Add(n)
+		m.Counters[key] += n
 	} else {
 		// add
-		counter := NewCounter()
-		counter.Add(n)
-		m.Counters[key] = counter
+		m.Counters[key] = n
 	}
+}
+
+// Get : get count of one key
+func (m *MapCounter) Get(key string) (n int64, ok bool) {
+	m.Lock.RLock()
+	defer m.Lock.RUnlock()
+
+	n, ok = m.Counters[key]
+	return
 }
 
 // Reset : reset map count
@@ -37,5 +44,5 @@ func (m *MapCounter) Reset() {
 	m.Lock.Lock()
 	defer m.Lock.Unlock()
 
-	m.Counters = make(map[string]*Counter, 0)
+	m.Counters = make(map[string]int64, 0)
 }

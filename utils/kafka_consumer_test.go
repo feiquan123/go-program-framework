@@ -42,12 +42,12 @@ func TestMultAssocComsumer(t *testing.T) {
 		Consumer = "topic_temp_test" // Consumer group
 		logger   = logrus.New()
 	)
-	MultAssocComsumer(
+	KafkaMultAssocComsumer(
 		23,
 		[]string{"127.0.0.1:9092"},
 		Consumer,
 		Topic,
-		func(topic string) (msg Msg) {
+		func(topic string) (msg KafkaMsg) {
 			if topic == Topic {
 				msg = new(TempKafkaMsg)
 			} else {

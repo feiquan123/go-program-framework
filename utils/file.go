@@ -21,6 +21,40 @@ func IsFileExists(filename string) (bool, error) {
 	return false, err
 }
 
+// NewFile : create new file
+func NewFile(filename string, head string) (file *os.File) {
+	filename, err := filepath.Abs(filename)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	if exist, _ := IsFileExists(filename); !exist {
+		// create fold
+		if err = os.MkdirAll(filepath.Dir(filename), os.ModePerm); err != nil {
+			log.Fatalln("can not create fold,", filepath.Dir(filename))
+		}
+		// create file
+		file, err = os.OpenFile(filename, os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModeAppend)
+		if err != nil {
+			log.Fatalln("failed to open file,", err)
+		}
+		// modifyfile authority
+		if err := os.Chmod(filename, 0666); err != nil {
+			log.Fatalln("can not modify file authority to 0666,", err)
+		}
+	} else {
+		file, err = os.OpenFile(filename, os.O_WRONLY|os.O_APPEND, os.ModeAppend)
+		if err != nil {
+			log.Fatalln("failed to open file,", err)
+		}
+	}
+
+	if head != "" {
+		file.WriteString(head)
+	}
+	return file
+}
+
 // FileSplitAsDate spilt file of project, rename current file.
 func FileSplitAsDate(filename, timeformat string, isBeforeDay bool) (err error) {
 	filename, err = filepath.Abs(filename)
@@ -54,38 +88,4 @@ func FileSplitAsDate(filename, timeformat string, isBeforeDay bool) (err error) 
 	out, err := Run(command)
 	fmt.Println(out)
 	return err
-}
-
-// NewFile : create new file
-func NewFile(filename string, head string) (file *os.File) {
-	filename, err := filepath.Abs(filename)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	if exist, _ := IsFileExists(filename); !exist {
-		// create fold
-		if err = os.MkdirAll(filepath.Dir(filename), os.ModePerm); err != nil {
-			log.Fatalln("can not create fold,", filepath.Dir(filename))
-		}
-		// create file
-		file, err = os.OpenFile(filename, os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModeAppend)
-		if err != nil {
-			log.Fatalln("failed to open file,", err)
-		}
-		// modifyfile authority
-		if err := os.Chmod(filename, 0666); err != nil {
-			log.Fatalln("can not modify file authority to 0666,", err)
-		}
-	} else {
-		file, err = os.OpenFile(filename, os.O_WRONLY|os.O_APPEND, os.ModeAppend)
-		if err != nil {
-			log.Fatalln("failed to open file,", err)
-		}
-	}
-
-	if head != "" {
-		file.WriteString(head)
-	}
-	return file
 }
