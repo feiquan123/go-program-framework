@@ -1,9 +1,0 @@
-#-----------------log--------------------
-log:
-  level: debug   # chose [trace,debug,info,error,warning,fatal,panic]
-  displayLine: true
-  isJson: false
-  console: true
-  file: /var/log/go-program-famework.log
-
-language: golang

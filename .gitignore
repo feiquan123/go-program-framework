@@ -1,3 +1,6 @@
-/.idea
-/log
 /.vscode
+/logs
+/bin
+/internal
+/readme\_.md
+/readme.zh\_.md
