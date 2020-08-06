@@ -7,7 +7,7 @@ RUN echo "http://mirrors.aliyun.com/alpine/latest-stable/main/" > /etc/apk/repos
 	echo "http://mirrors.aliyun.com/alpine/latest-stable/community/" >> /etc/apk/repositories &&\
 	apk add make git openssh &&\
 	sed -i "s/#PermitRootLogin.*/PermitRootLogin yes/g" /etc/ssh/sshd_config &&\
-	chmod 600 /root/.ssh/gitlab/fengzhiquan &&\
+	chmod 600 /root/.ssh/gitlab/feiquan123 &&\
 	mkdir -p $GOPATH/src/github.com/feiquan123/go-program-framework &&\
 	go env -w GOPROXY="https://goproxy.cn,direct" GO111MODULE=on GOSUMDB=off
 
